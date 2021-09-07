@@ -14,11 +14,12 @@ import {
   IntegratedPaging,
   IntegratedSelection,
   EditingState,
+  Column,
 } from "@devexpress/dx-react-grid";
 import { GridExporter } from "@devexpress/dx-react-grid-export";
 import {
   Grid,
-  Table as DXTable,
+  Table as DxTable,
   TableHeaderRow,
   TableGroupRow,
   TableSelection,
@@ -34,11 +35,10 @@ import {
   PagingPanel,
   TableEditColumn,
 } from "@devexpress/dx-react-grid-material-ui";
-import { TablePropsType, TableColumn } from "./@types";
-import ListSkeletons from "components/Skeletons/ListSkeletons";
-import Helper from "utils/Helpers";
-import TableContent from "./TableContent";
+import ListSkeletons from "../Skeletons/ListSkeletons";
+
 import { saveAs } from "file-saver";
+import TableContent from "./TableContent";
 
 import TableToolbar from "./TableToolbar/index";
 import ColumnChooserButton from "./ColumnChooser/ColumnChooserButton/index";
@@ -48,6 +48,8 @@ import TableRowCommand from "./TableRowCommand/index";
 import ColumnChooserItemComponent from "./ColumnChooser/ColumnChooserItemComponent/index";
 import ColumnChooserOverlayComponent from "./ColumnChooser/ColumnChooserOverlayComponent/index";
 import ColumnChooserContainerComponent from "./ColumnChooser/ColumnChooserContainerComponent/index";
+import Helper from "utils/Helper";
+import { TableColumn, TablePropsType } from "config/@types/components/Table";
 
 const onSave = (workbook: any) => {
   workbook.xlsx.writeBuffer().then((buffer: Buffer) => {
@@ -58,21 +60,30 @@ const onSave = (workbook: any) => {
   });
 };
 
-const DateFormatter = (props: any) => {
-  return props.column
+const DateFormatter = (props: any) =>
+  props.column
     ? !Helper.isEmpty(props.value)
       ? props.column.format
         ? props.column.format(props.value)
         : props.value
       : "Unknown"
-    : "Undefined column";
-};
+    : "Undefined Column";
 
 function DataFormatter(props: any) {
   return <DataTypeProvider formatterComponent={DateFormatter} {...props} />;
 }
 
 function Table(props: TablePropsType) {
+  const columns: Array<Column> = props.columns?.map(
+    (column) =>
+      ({
+        name: column.name,
+        title: column.title,
+        getCellValue: column.getCellValue,
+        format: column.format,
+      } as Column)
+  );
+
   const [grouping, setGrouping] = React.useState<Array<Grouping>>(
     props.defaultGrouping || []
   );
@@ -80,14 +91,19 @@ function Table(props: TablePropsType) {
   const [selection, setSelection] = React.useState<Array<any>>(
     props.selectedRows || []
   );
+
   const [filters, setFilters] = React.useState<Array<Filter>>([]);
+
   const [currentPage, setCurrentPage] = React.useState(0);
+
   const [pageSize, setPageSize] = React.useState(
-    props.defaultGrouping ? props.rows.length : 10
+    props.defaultGrouping ? props.rows?.length : 10
   );
 
   const sizes = [10, 20, 30];
-  if (props.rows.length > 30) sizes.push(props.rows.length);
+
+  if (props.rows?.length > 30) sizes.push(props.rows.length);
+
   const [pageSizes] = React.useState(sizes);
   const exporterRef: any = React.useRef(null);
 
@@ -98,41 +114,43 @@ function Table(props: TablePropsType) {
     [exporterRef]
   );
 
-  const columnsName = props.columns.map(
+  const columnsName = props.columns?.map(
     (column: TableColumn<any>) => column.name
   );
 
-  const columnsWithWidth = props.columns.map((column: TableColumn<any>) => ({
+  const columnsWithWidth = props.columns?.map((column: TableColumn<any>) => ({
     columnName: column.name,
     width: column.width || props.defaultColumnWidth || 150,
   }));
 
-  const [columnOrder, setColumnOrder] = React.useState<Array<any>>(columnsName);
-  const [columnWidths, setColumnWidths] =
-    React.useState<Array<any>>(columnsWithWidth);
+  const [columnOrder, setColumnOrder] = React.useState<Array<any>>(
+    columnsName || []
+  );
+  const [columnWidths, setColumnWidths] = React.useState<Array<any>>(
+    columnsWithWidth || []
+  );
   const [filtersToggle, setFiltersToggle] = React.useState(false);
   const [hiddenColumnNames, setHiddenColumnNames] = React.useState<
     Array<string>
   >([]);
 
-  const noDataRow = (params: any) => {
-    return props.loading ? (
-      <DXTable.Row {...params}>
-        <td colSpan={props.columns.length}>
+  const noDataRow = (params: any) =>
+    props.loading ? (
+      <DxTable.Row {...params}>
+        <td colSpan={20}>
           <ListSkeletons items={10} />
         </td>
-      </DXTable.Row>
+      </DxTable.Row>
     ) : (
-      <DXTable.Row {...params}>
+      <DxTable.Row {...params}>
         <td
           colSpan={props.columns.length}
           style={{ textAlign: "center", padding: 5 }}
         >
-          Nenhuma dado encontrado.
+          Empty table
         </td>
-      </DXTable.Row>
+      </DxTable.Row>
     );
-  };
 
   const commitChanges = (data: any) => {
     if (data.deleted && props.onRowDelete) props.onRowDelete(data.deleted);
@@ -140,12 +158,14 @@ function Table(props: TablePropsType) {
 
   return props.columns && props.columns.length > 0 ? (
     <React.Fragment>
-      <Grid rows={props.loading ? [] : props.rows} columns={props.columns}>
+      <Grid rows={props.loading ? [] : props.rows} columns={columns}>
         <DragDropProvider />
         <SortingState
           defaultSorting={props.defaultSorting ? props.defaultSorting : []}
         />
-        <GroupingState grouping={grouping} onGroupingChange={setGrouping} />
+        {props.grouping && (
+          <GroupingState grouping={grouping} onGroupingChange={setGrouping} />
+        )}
         {filtersToggle && (
           <FilteringState filters={filters} onFiltersChange={setFilters} />
         )}
@@ -167,14 +187,15 @@ function Table(props: TablePropsType) {
             onPageSizeChange={setPageSize}
           />
         )}
-        {props.showPaging && <IntegratedPaging />}
+
         <IntegratedSorting />
-        <IntegratedGrouping />
+        {props.grouping && <IntegratedGrouping />}
         {filtersToggle && <IntegratedFiltering />}
+        {props.showPaging && <IntegratedPaging />}
         {props.showTableEditColumn && (
           <EditingState onCommitChanges={commitChanges} />
         )}
-        <DXTable noDataRowComponent={noDataRow} />
+        <DxTable noDataRowComponent={noDataRow} />
         <TableColumnReordering
           order={columnOrder}
           onOrderChange={setColumnOrder}
@@ -182,7 +203,7 @@ function Table(props: TablePropsType) {
         <TableColumnResizing
           columnWidths={columnWidths}
           onColumnWidthsChange={setColumnWidths}
-          resizingMode={"widget"}
+          resizingMode="widget"
         />
         <TableColumnVisibility
           hiddenColumnNames={hiddenColumnNames}
@@ -206,7 +227,7 @@ function Table(props: TablePropsType) {
           showSelectAll={props.showSelectAll || false}
           headerCellComponent={TableSelectionHeaderComponent}
         />
-        <TableGroupRow contentComponent={TableContent} />
+        {props.grouping && <TableGroupRow contentComponent={TableContent} />}
         <Toolbar
           rootComponent={(toolBarProps: any) => (
             <TableToolbar
@@ -224,13 +245,15 @@ function Table(props: TablePropsType) {
           overlayComponent={ColumnChooserOverlayComponent}
           containerComponent={ColumnChooserContainerComponent}
         />
-        <GroupingPanel showGroupingControls showSortingControls />
+        {props.grouping && (
+          <GroupingPanel showGroupingControls showSortingControls />
+        )}
         <ExportPanel startExport={startExport} />
       </Grid>
       <GridExporter
         ref={exporterRef}
         rows={props.rows}
-        columns={props.columns}
+        columns={columns}
         grouping={grouping}
         filters={filters}
         selection={selection}

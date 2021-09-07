@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import clsx from "clsx";
 import {
   makeStyles,
@@ -29,11 +29,13 @@ import {
   ExpandMore,
 } from "@material-ui/icons";
 import style from "./style";
-import { useHistory } from "react-router";
+import { useHistory, useLocation, useParams } from "react-router";
 import Dashboard from "../Dashboard/index";
 import Settings from "../Settings/index";
 import { ReactComponent as SQSIcon } from "../../assets/icons/SQS.svg";
 import SQS from "../Resources/SQS/index";
+import { MAP_TABS_TITLE } from "../Home/home.model";
+import RouterBreadcrumbs from "../../components/RouterBreadcrumbs/index";
 
 const useStyles = makeStyles(style);
 
@@ -43,11 +45,15 @@ export default function Home() {
   const [open, setOpen] = React.useState(false);
   const [openResources, setOpenResources] = React.useState(false);
   const [tab, setTab] = React.useState("");
+  const [title, setTitle] = React.useState("AWS Manager");
   const history = useHistory();
+  const params: any = useParams();
+  const location = useLocation();
 
   const handleTabChange = (val: string = "dashboard") => {
     handlePageRoute(val);
     setTab(val);
+    setTitle(MAP_TABS_TITLE[val] || val);
   };
 
   const handlePageRoute = (val: string, key?: string) => {
@@ -67,6 +73,20 @@ export default function Home() {
   const handleResourcesClick = () => {
     setOpenResources(!openResources);
   };
+
+  const loadPage = () => {
+    const page = params.page || "dashboard";
+    setTab(page);
+    setTitle(MAP_TABS_TITLE[page] || page);
+  };
+
+  useEffect(() => {
+    loadPage();
+  }, []);
+
+  useEffect(() => {
+    loadPage();
+  }, [location]);
 
   return (
     <div className={classes.root}>
@@ -90,7 +110,7 @@ export default function Home() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
-            AWS Manager
+            {title}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -168,7 +188,8 @@ export default function Home() {
       </Drawer>
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        <Grid container>
+        <Grid container spacing={2}>
+          <RouterBreadcrumbs breadcrumbNameMap={MAP_TABS_TITLE} />
           {tab === "dashboard" && <Dashboard />}
           {tab === "sqs" && <SQS />}
           {tab === "settings" && <Settings />}

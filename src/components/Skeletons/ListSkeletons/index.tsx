@@ -1,6 +1,6 @@
 import React from "react";
 import { ListItem, List, Divider } from "@material-ui/core";
-import Helper from "utils/Helpers";
+import Helper from "utils/Helper";
 import Skeleton from "@material-ui/lab/Skeleton";
 
 type ListSkeletonsType = {

@@ -1,7 +1,7 @@
 import { EnvVariables, NodeEnvInterface } from "config/@types/env"
 
 
-const NODE_ENV: NodeEnvInterface = process.env.NODE_ENV as NodeEnvInterface || process.env.REACT_APP_ENV as NodeEnvInterface || 'development'
+const NODE_ENV: NodeEnvInterface = process.env.REACT_APP_ENV as NodeEnvInterface || process.env.NODE_ENV as NodeEnvInterface || 'development'
 
 
 const env: EnvVariables = {

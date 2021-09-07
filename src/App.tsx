@@ -7,7 +7,7 @@ import NotFound from './pages/NotFound/index';
 function App() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/:page?" component={Home} />
       <Route path="/home">
         <Redirect to="/" />
       </Route>

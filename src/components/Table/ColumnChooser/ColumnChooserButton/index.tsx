@@ -5,7 +5,7 @@ import { makeStyles } from "@material-ui/styles";
 
 import { ToggleButton } from "@material-ui/lab";
 import { VisibilityRounded, VisibilityOffRounded } from "@material-ui/icons";
-import style from "components/Table/TableToolbar/style";
+import style from "../../TableToolbar/style";
 
 const useStyles = makeStyles(style);
 

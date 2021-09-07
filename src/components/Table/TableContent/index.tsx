@@ -1,7 +1,7 @@
+import { TableContentProps } from "config/@types/components/Table";
 import React, { useState } from "react";
-import { TableContentType } from "../@types";
 
-function TableContent(props: TableContentType) {
+function TableContent(props: TableContentProps) {
   const [value] = useState(props.row.value);
   const symbols = Object.getOwnPropertySymbols(props.row);
   const symbolKey =
