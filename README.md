@@ -1,3 +1,8 @@
+# AWS Manager
+
+React app that manages AWS resources, basically built to manage [localstack](https://github.com/localstack/localstack) resources
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
 
 ## Available Scripts
