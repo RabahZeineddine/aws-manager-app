@@ -6,6 +6,7 @@ export const MAP_TABS_TITLE: {
 } = {
     "dashboard": "Dashboard",
     "resources": "Resources",
+    "sns": "SNS",
     "sqs": "SQS",
     "settings": "Settings"
 }

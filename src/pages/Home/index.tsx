@@ -33,9 +33,11 @@ import { useHistory, useLocation, useParams } from "react-router";
 import Dashboard from "../Dashboard/index";
 import Settings from "../Settings/index";
 import { ReactComponent as SQSIcon } from "../../assets/icons/SQS.svg";
+import { ReactComponent as SNSIcon } from "../../assets/icons/SNS.svg";
 import SQS from "../Resources/SQS/index";
 import { MAP_TABS_TITLE } from "../Home/home.model";
 import RouterBreadcrumbs from "../../components/RouterBreadcrumbs/index";
+import SNS from "../Resources/SNS/index";
 
 const useStyles = makeStyles(style);
 
@@ -161,6 +163,17 @@ export default function Home() {
             <ListItem
               button
               className={classes.nested}
+              onClick={() => handleTabChange("sns")}
+              selected={tab === "sns"}
+            >
+              <ListItemIcon>
+                <SvgIcon component={SNSIcon} viewBox="0 0 80 80" />
+              </ListItemIcon>
+              <ListItemText primary="SNS" />
+            </ListItem>
+            <ListItem
+              button
+              className={classes.nested}
               onClick={() => handleTabChange("sqs")}
               selected={tab === "sqs"}
             >
@@ -191,6 +204,7 @@ export default function Home() {
         <Grid container spacing={2}>
           <RouterBreadcrumbs breadcrumbNameMap={MAP_TABS_TITLE} />
           {tab === "dashboard" && <Dashboard />}
+          {tab === "sns" && <SNS />}
           {tab === "sqs" && <SQS />}
           {tab === "settings" && <Settings />}
         </Grid>

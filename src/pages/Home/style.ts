@@ -3,7 +3,9 @@ import { Theme, createStyles } from '@material-ui/core';
 const drawerWidth = 240;
 export default (theme: Theme) => createStyles({
     root: {
-        display: 'flex',
+        display: "flex",
+        overflowX: 'hidden',
+        flexGrow: 1
     },
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
@@ -60,6 +62,9 @@ export default (theme: Theme) => createStyles({
     content: {
         flexGrow: 1,
         padding: theme.spacing(3),
+        display: 'flex',
+        flexDirection: 'column',
+        overflowX: 'hidden'
     },
     nested: {
         paddingLeft: theme.spacing(4),

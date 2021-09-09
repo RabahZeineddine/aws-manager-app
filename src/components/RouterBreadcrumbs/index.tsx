@@ -31,14 +31,13 @@ function RouterBreadcrumbs(props: RouterBreadcrumbsProps) {
           const last = index === pathnames.length - 1;
           const page = pathnames.slice(0, index + 1).join("/");
           const to = `/${page}`;
-
           return last ? (
             <Typography color="textPrimary" key={to}>
-              {breadcrumbNameMap[page]}
+              {breadcrumbNameMap[value] || value}
             </Typography>
           ) : (
             <LinkRouter color="inherit" to={to} key={to}>
-              {breadcrumbNameMap[page]}
+              {breadcrumbNameMap[value] || value}
             </LinkRouter>
           );
         })}
